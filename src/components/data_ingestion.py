@@ -8,8 +8,10 @@ from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
 from src.components.data_transformation import DataTransformation
-
 from src.components.data_transformation import DataTransformationConfig
+
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
 
 @dataclass
 class DataIngestionConfig:
@@ -48,8 +50,16 @@ class DataIngestion:
             raise CustomException(e)  # Convert Exception to string
           
 if __name__ == "__main__":
-  obj=DataIngestion()
-  train_data,test_data = obj.initiate_data_ingestion()
-  
-  data_transformation = DataTransformation()
-  data_transformation.initiate_data_transformation(train_data,test_data)
+    # 1. Ingest the data
+    obj = DataIngestion()
+    train_data, test_data = obj.initiate_data_ingestion()
+
+    # 2. Transform the data
+    data_transformation = DataTransformation()
+    # This is the line we fixed (now accepts all 3 return values)
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_data, test_data)
+
+    # 3. Train the model
+    modeltrainer = ModelTrainer()
+    # This line is correct and the error should disappear
+    print(modeltrainer.initiate_model_trainer(train_arr, test_arr))
